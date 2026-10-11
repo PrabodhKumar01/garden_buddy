@@ -13,7 +13,12 @@ from app.core.database import check_db_connection, init_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context manager for startup and shutdown events."""
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"WARNING: init_db encountered an issue during startup: {e}", flush=True)
     yield
 
 
@@ -27,10 +32,14 @@ app = FastAPI(
 )
 
 # Configure CORS
+origins = settings.ALLOWED_ORIGINS
+# Browsers reject allow_credentials=True when origin is wildcard "*"
+allow_creds = "*" not in origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=origins,
+    allow_credentials=allow_creds,
     allow_methods=["*"],
     allow_headers=["*"],
 )
