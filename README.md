@@ -404,17 +404,27 @@ uvicorn app.main:app --reload
 
 ---
 
-# ☁️ Deploy to Render
+# ☁️ Deployment Guide
 
-GardenBuddy includes a production-ready Render Blueprint ([render.yaml](render.yaml)).
+GardenBuddy is structured so you can deploy as a unified monolith or decouple into **Vercel (Frontend)** and **Render (Backend)**:
 
-1. Push your code to GitHub.
-2. In [Render Dashboard](https://dashboard.render.com), click **New +** $\rightarrow$ **Blueprint**.
-3. Select your GitHub repository.
-4. Render automatically provisions:
+### 🌐 Deploy Frontend to Vercel
+The [`frontend/`](frontend/) directory is a standalone web app ready for Vercel Edge:
+1. Push to GitHub and go to [vercel.com](https://vercel.com).
+2. Create **New Project**, select your repository.
+3. Set **Root Directory** to `frontend`.
+4. Framework Preset: `Other` (static).
+5. Deploy!
+6. In the app header or in [`frontend/config.js`](frontend/config.js), point the API endpoint to your Render backend URL.
+
+### 🚀 Deploy Backend to Render
+The backend FastAPI application deploys automatically with managed PostgreSQL:
+1. In [Render Dashboard](https://dashboard.render.com), click **New +** $\rightarrow$ **Blueprint**.
+2. Select your GitHub repository.
+3. Render reads [`render.yaml`](render.yaml) and provisions:
    - A managed **PostgreSQL** database (`gardenbuddy-db`)
    - A **FastAPI Web Service** (`gardenbuddy`) running `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Access your live app at `https://<your-service>.onrender.com/dashboard`.
+4. Access your live API docs at `https://<your-service>.onrender.com/docs` and health check at `/health`.
 
 ---
 

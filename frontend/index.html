@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenBuddy — AI Garden Weather Agent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo-group">
+        <h1>🌱 GardenBuddy</h1>
+        <div class="tagline">AI Garden Weather Agent — Built for Hacktoberfest "Touch Grass"</div>
+      </div>
+      <div class="header-controls">
+        <!-- Backend API indicator / Switcher -->
+        <button id="btnApiSettings" class="api-endpoint-badge" title="Click to view or edit backend API URL">
+          <span>🔗</span> <span id="apiEndpointText">API: Connecting...</span>
+        </button>
+
+        <div class="garden-select-group">
+          <label for="gardenSelect" style="color: white; font-size: 0.9rem;">Garden:</label>
+          <select id="gardenSelect" aria-label="Select active garden">
+            <option value="">Loading gardens...</option>
+          </select>
+          <button id="btnNewGarden" class="btn btn-secondary btn-sm" title="Create a new garden plot">+ New</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Motivational "Touch Grass" Banner -->
+  <div class="touch-grass-banner" id="touchGrassBanner">
+    <span>🌿</span>
+    <span id="motivationText">Step outside today! Let AI plan your morning tasks so you spend less time on screens and more time in the soil.</span>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: TODAY'S GARDEN PLAN (Hero Section) -->
+    <section class="card hero-plan-card" id="planSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">🌱 Today's Daily Garden Plan</h2>
+          <span id="planDate" style="font-size: 0.85rem; color: var(--text-muted);">Today</span>
+        </div>
+        <button id="btnRegeneratePlan" class="btn btn-primary">
+          <span>🔄</span> Refresh Plan
+        </button>
+      </div>
+
+      <!-- Weather summary badge -->
+      <div id="weatherBadge" class="weather-badge">
+        <span>🌤️</span> <span id="weatherText">Checking weather conditions...</span>
+      </div>
+
+      <!-- Action items list -->
+      <ul class="task-list" id="planTaskList">
+        <li class="empty-state">Loading today's recommendations...</li>
+      </ul>
+
+      <!-- AI Reasoning Accordion / Note -->
+      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+        <strong>Agent Reasoning:</strong> <span id="reasoningText">Analyzing garden state, weather, and memory...</span>
+      </div>
+    </section>
+
+    <!-- SECTION 2: MY PLANTS (Plant Management) -->
+    <section class="card" id="plantsSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">🪴 Garden Plants</h2>
+          <div style="font-size: 0.85rem; color: var(--text-muted);" id="gardenMetaInfo">
+            Location: <span id="gardenLocationDisplay">Loading...</span> | 
+            Type: <span id="gardenTypeDisplay">-</span> | 
+            Sunlight: <span id="gardenSunlightDisplay">-</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnEditGarden" class="btn btn-secondary btn-sm">Edit Garden</button>
+          <button id="btnAddPlant" class="btn btn-primary btn-sm">+ Add Plant</button>
+        </div>
+      </div>
+
+      <div class="plants-grid" id="plantsGrid">
+        <div class="empty-state">Loading plants...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD / EDIT PLANT -->
+  <dialog id="plantDialog">
+    <div class="dialog-header" id="plantDialogTitle">Add Plant</div>
+    <form id="plantForm" method="dialog">
+      <input type="hidden" id="plantIdInput" value="">
+      <div class="form-group">
+        <label for="plantNameInput">Plant Name *</label>
+        <input type="text" id="plantNameInput" required placeholder="e.g. San Marzano Tomato">
+      </div>
+      <div class="form-group">
+        <label for="plantSpeciesInput">Species / Variety</label>
+        <input type="text" id="plantSpeciesInput" placeholder="e.g. Solanum lycopersicum">
+      </div>
+      <div class="form-group">
+        <label for="plantDateInput">Date Planted</label>
+        <input type="date" id="plantDateInput">
+      </div>
+      <div class="form-group">
+        <label for="plantLocationInput">Location in Garden</label>
+        <input type="text" id="plantLocationInput" placeholder="e.g. South raised bed, pot 2">
+      </div>
+      <div class="form-group">
+        <label for="plantNotesInput">Notes / Care Observations</label>
+        <textarea id="plantNotesInput" rows="2" placeholder="e.g. Prefers moist soil, added compost"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancelPlant">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btnSavePlant">Save Plant</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: CREATE / EDIT GARDEN -->
+  <dialog id="gardenDialog">
+    <div class="dialog-header" id="gardenDialogTitle">Garden Details</div>
+    <form id="gardenForm" method="dialog">
+      <input type="hidden" id="gardenIdInput" value="">
+      <div class="form-group">
+        <label for="gardenNameInput">Garden Name *</label>
+        <input type="text" id="gardenNameInput" required placeholder="e.g. Backyard Raised Beds">
+      </div>
+      <div class="form-group">
+        <label for="gardenLocationInput">City / Region (for weather lookup)</label>
+        <input type="text" id="gardenLocationInput" placeholder="e.g. San Francisco, CA">
+      </div>
+      <div class="form-group">
+        <label for="gardenTypeInput">Garden Type</label>
+        <select id="gardenTypeInput">
+          <option value="Backyard">Backyard</option>
+          <option value="Balcony">Balcony</option>
+          <option value="Indoor">Indoor</option>
+          <option value="Community Plot">Community Plot</option>
+          <option value="Container">Container</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="gardenSunlightInput">Sunlight Exposure</label>
+        <select id="gardenSunlightInput">
+          <option value="Full Sun (6+ hours)">Full Sun (6+ hours)</option>
+          <option value="Partial Shade (3-6 hours)">Partial Shade (3-6 hours)</option>
+          <option value="Full Shade (<3 hours)">Full Shade (&lt;3 hours)</option>
+        </select>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancelGarden">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btnSaveGarden">Save Garden</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: TASK OBSERVATION & COMPLETION -->
+  <dialog id="taskCompleteDialog">
+    <div class="dialog-header">Complete Garden Activity</div>
+    <form id="taskCompleteForm" method="dialog">
+      <input type="hidden" id="completeTaskId" value="">
+      <p id="completeTaskTitle" style="font-weight: 600; margin-bottom: 0.5rem;"></p>
+      <div class="form-group">
+        <label for="taskNotesInput">Record any observations or results (optional):</label>
+        <textarea id="taskNotesInput" rows="3" placeholder="e.g. Harvested a fresh bunch, soil felt slightly dry 2 inches deep"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancelComplete">Cancel</button>
+        <button type="submit" class="btn btn-primary">Mark Completed</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: BACKEND API CONFIGURATION -->
+  <dialog id="apiConfigDialog">
+    <div class="dialog-header">Backend API Connection</div>
+    <form id="apiConfigForm" method="dialog">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        When deployed on Vercel, this frontend calls your Render FastAPI backend.
+      </p>
+      <div class="form-group">
+        <label for="apiUrlInput">Backend URL</label>
+        <input type="text" id="apiUrlInput" placeholder="https://gardenbuddy.onrender.com">
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="btnResetApiUrl">Reset to Default</button>
+        <button type="button" class="btn btn-secondary" id="btnCancelApiConfig">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save & Reload</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Scripts: config.js loads first to define API_BASE_URL, then app.js runs -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

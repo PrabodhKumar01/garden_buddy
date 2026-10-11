@@ -1,0 +1,11 @@
+{
+  "name": "gardenbuddy-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GardenBuddy AI Garden Weather Agent - Frontend for Vercel",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
+
