@@ -4,7 +4,7 @@
 (function () {
   // Default production backend URL on Render.
   // Update this to your deployed Render URL (e.g. "https://gardenbuddy.onrender.com")
-  const DEFAULT_PROD_BACKEND_URL = "https://gardenbuddy.onrender.com";
+  const DEFAULT_PROD_BACKEND_URL = " https://garden-buddy-pn9h.onrender.com";
 
   function resolveApiBaseUrl() {
     // 1. Check window-level override (injected by host or test)
