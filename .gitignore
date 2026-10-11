@@ -1,0 +1,48 @@
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Virtualenvs
+.venv/
+venv/
+ENV/
+env/
+.env.local
+Lib/
+Scripts/
+pyvenv.cfg
+include/
+share/
+install-devrelay.ps1
+
+# Secrets and local configurations (CRITICAL: never commit real credentials)
+.env
+.env.*
+!.env.example
+
+# Local databases
+*.db
+*.sqlite3
+gardenbuddy.db
+
+# Redundant files
+task.md
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+junit/
+
+# IDE & Editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
